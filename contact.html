@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact — Fliq</title>
-  <meta name="description" content="Report a bug or suggest a feature for Fliq — your feedback goes straight to the developer." />
+  <meta name="description" content="Get in touch with the Fliq team — report a bug, suggest a feature, or just say hi." />
   <link rel="stylesheet" href="style.css" />
   <style>
     /* ── Contact page ─────────────────────────────────────────────────────── */
@@ -24,7 +24,7 @@
     /* Type toggle */
     .type-toggle {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-bottom: 28px;
     }
@@ -33,18 +33,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 12px 16px;
+      gap: 7px;
+      padding: 11px 12px;
       border-radius: var(--radius-sm);
       border: 1.5px solid var(--border);
       background: var(--surface-2);
       color: var(--text-2);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: border-color .2s, background .2s, color .2s, box-shadow .2s;
       font-family: inherit;
       text-align: center;
+      white-space: nowrap;
     }
 
     .type-btn:hover {
@@ -59,7 +60,15 @@
       box-shadow: 0 0 0 3px rgba(99, 102, 241, .1);
     }
 
-    .type-btn .icon { font-size: 18px; line-height: 1; }
+    .type-btn .icon { font-size: 16px; line-height: 1; }
+
+    /* Two-column row for name + email */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
 
     /* Form fields */
     .form-group {
@@ -74,9 +83,10 @@
       margin-bottom: 6px;
     }
 
-    .form-label .req {
-      color: var(--red);
-      margin-left: 2px;
+    .form-label .opt {
+      color: var(--text-3);
+      font-weight: 400;
+      margin-left: 4px;
     }
 
     .form-input,
@@ -109,7 +119,7 @@
 
     .form-textarea {
       resize: vertical;
-      min-height: 130px;
+      min-height: 150px;
     }
 
     .char-count {
@@ -167,19 +177,16 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Status messages */
-    .status-msg {
+    /* Error message */
+    .error-msg {
       display: none;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-size: 14px;
       font-weight: 500;
+      color: var(--red);
     }
-
-    .status-msg.visible { display: flex; }
-
-    .status-msg.success { color: var(--green); }
-    .status-msg.error   { color: var(--red); }
+    .error-msg.visible { display: flex; }
 
     /* Success state — replaces the form */
     .success-state {
@@ -225,6 +232,14 @@
     }
 
     .contact-divider a:hover { text-decoration: underline; }
+
+    @media (max-width: 520px) {
+      .contact-card { padding: 24px 20px; }
+      .type-toggle  { grid-template-columns: 1fr 1fr; }
+      .type-toggle .type-btn:last-child { grid-column: 1 / -1; }
+      .form-row     { grid-template-columns: 1fr; gap: 0; }
+      .form-row .form-group { margin-bottom: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -252,7 +267,7 @@
   <div class="container-xs">
     <div style="font-size:40px;margin-bottom:16px">💬</div>
     <h1>Contact Us</h1>
-    <p class="meta">Report a bug or suggest a feature — we read everything.</p>
+    <p class="meta">Bug, feature idea, or just want to say hi — we read everything.</p>
   </div>
 </div>
 
@@ -264,8 +279,8 @@
       <!-- Success state (hidden until submit) -->
       <div class="success-state" id="successState">
         <div class="success-icon">🎉</div>
-        <h2>Got it — thanks!</h2>
-        <p>Your submission has been logged as a GitHub issue and the developer has been notified. We'll review it shortly.</p>
+        <h2>Message sent — thanks!</h2>
+        <p>We received your message and will follow up if you left an email. We appreciate you taking the time to reach out.</p>
         <button class="btn-submit" onclick="resetForm()" style="margin:0 auto">
           Send another →
         </button>
@@ -276,56 +291,73 @@
 
         <!-- Type selector -->
         <div class="form-group">
-          <label class="form-label">What kind of feedback is this?<span class="req">*</span></label>
+          <label class="form-label">What's this about?</label>
           <div class="type-toggle">
-            <button type="button" class="type-btn active" data-type="bug" onclick="selectType('bug', this)">
+            <button type="button" class="type-btn active" onclick="selectType('bug', this)">
               <span class="icon">🐛</span> Bug Report
             </button>
-            <button type="button" class="type-btn" data-type="feature" onclick="selectType('feature', this)">
-              <span class="icon">✨</span> Feature Request
+            <button type="button" class="type-btn" onclick="selectType('feature', this)">
+              <span class="icon">✨</span> Feature Idea
+            </button>
+            <button type="button" class="type-btn" onclick="selectType('general', this)">
+              <span class="icon">💬</span> General
             </button>
           </div>
-          <input type="hidden" id="feedbackType" value="bug" />
+          <input type="hidden" id="contactType" value="bug" />
         </div>
 
-        <!-- Title -->
-        <div class="form-group">
-          <label class="form-label" for="feedbackTitle">
-            Short summary<span class="req">*</span>
-          </label>
-          <input
-            id="feedbackTitle"
-            class="form-input"
-            type="text"
-            maxlength="200"
-            placeholder="e.g. App crashes when swiping the last photo"
-            oninput="updateTitleCount()"
-            required
-          />
-          <div class="char-count" id="titleCount">200 characters remaining</div>
+        <!-- Name + Email -->
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" for="contactName">
+              Name<span class="opt">(optional)</span>
+            </label>
+            <input
+              id="contactName"
+              class="form-input"
+              type="text"
+              maxlength="100"
+              placeholder="Your name"
+              autocomplete="name"
+            />
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" for="contactEmail">
+              Email<span class="opt">(for a reply)</span>
+            </label>
+            <input
+              id="contactEmail"
+              class="form-input"
+              type="email"
+              maxlength="254"
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+          </div>
         </div>
 
-        <!-- Description -->
-        <div class="form-group">
-          <label class="form-label" for="feedbackBody">
-            Details <span style="color:var(--text-3);font-weight:400">(optional)</span>
+        <!-- Message -->
+        <div class="form-group" style="margin-top:20px">
+          <label class="form-label" for="contactMessage">
+            Message<span style="color:var(--red);margin-left:2px">*</span>
           </label>
           <textarea
-            id="feedbackBody"
+            id="contactMessage"
             class="form-textarea"
             maxlength="5000"
-            placeholder="What's happening? What did you expect? Any steps to reproduce?"
-            oninput="updateBodyCount()"
+            placeholder="Tell us what's on your mind…"
+            oninput="updateMsgCount()"
+            required
           ></textarea>
-          <div class="char-count" id="bodyCount">5000 characters remaining</div>
+          <div class="char-count" id="msgCount">5000 characters remaining</div>
         </div>
 
         <!-- Submit row -->
         <div class="submit-row">
           <button type="submit" class="btn-submit" id="submitBtn" disabled>
-            Send feedback →
+            Send message →
           </button>
-          <span class="status-msg error" id="errorMsg">
+          <span class="error-msg" id="errorMsg">
             ⚠ <span id="errorText">Something went wrong. Please try again.</span>
           </span>
         </div>
@@ -333,11 +365,8 @@
       </form>
 
       <!-- Footer note -->
-      <p class="contact-divider">
-        Prefer email? Reach us at
-        <a href="mailto:support@getfliq.app">support@getfliq.app</a>
-        &nbsp;·&nbsp;
-        <a href="https://github.com/brianlowen/Fliq/issues" target="_blank">View open issues on GitHub →</a>
+      <p class="contact-divider" id="contactDivider">
+        Prefer email? <a href="mailto:support@getfliq.app">support@getfliq.app</a>
       </p>
 
     </div>
@@ -386,19 +415,15 @@
 
 <!-- ── JS ────────────────────────────────────────────────────────────────── -->
 <script>
-  const API_URL = 'https://fliq-selfimprovement-fn.azurewebsites.net/api/submitfeedback';
-  // Function key — split to avoid plaintext secret in source control
-  const _k = ['67SVxEVKYtxp', 'xL0khHx9j0gW', '4gxHIfS1BJpD', 'L684CmXbAzFu', 'L69a1A=='];
-  const API_KEY = _k.join('');
+  const API_URL = 'https://fliq-selfimprovement-fn.azurewebsites.net/api/submitcontact';
 
   const form        = document.getElementById('contactForm');
   const submitBtn   = document.getElementById('submitBtn');
   const errorMsg    = document.getElementById('errorMsg');
   const errorText   = document.getElementById('errorText');
   const successState = document.getElementById('successState');
-  const titleInput  = document.getElementById('feedbackTitle');
-  const bodyInput   = document.getElementById('feedbackBody');
-  const typeInput   = document.getElementById('feedbackType');
+  const msgInput    = document.getElementById('contactMessage');
+  const typeInput   = document.getElementById('contactType');
 
   // ── Type toggle ───────────────────────────────────────────────────────────
 
@@ -407,34 +432,22 @@
     btn.classList.add('active');
     typeInput.value = type;
 
-    // Update placeholder copy to match the selected type
-    titleInput.placeholder = type === 'bug'
-      ? 'e.g. App crashes when swiping the last photo'
-      : 'e.g. Let me swipe in landscape mode';
-    bodyInput.placeholder = type === 'bug'
-      ? 'What\'s happening? What did you expect? Any steps to reproduce?'
-      : 'What would you like to see in Fliq?';
+    const placeholders = {
+      bug:     'What\'s happening? What did you expect? Any steps to reproduce?',
+      feature: 'What would you like to see in Fliq? How would it help you?',
+      general: 'Tell us what\'s on your mind…',
+    };
+    msgInput.placeholder = placeholders[type];
   }
 
-  // ── Character counters ────────────────────────────────────────────────────
+  // ── Character counter ─────────────────────────────────────────────────────
 
-  function updateTitleCount() {
-    const remaining = 200 - titleInput.value.length;
-    const el = document.getElementById('titleCount');
+  function updateMsgCount() {
+    const remaining = 5000 - msgInput.value.length;
+    const el = document.getElementById('msgCount');
     el.textContent = remaining + ' characters remaining';
     el.classList.toggle('over', remaining < 0);
-    updateSubmitState();
-  }
-
-  function updateBodyCount() {
-    const remaining = 5000 - bodyInput.value.length;
-    const el = document.getElementById('bodyCount');
-    el.textContent = remaining + ' characters remaining';
-    el.classList.toggle('over', remaining < 0);
-  }
-
-  function updateSubmitState() {
-    submitBtn.disabled = titleInput.value.trim().length === 0;
+    submitBtn.disabled = msgInput.value.trim().length === 0;
   }
 
   // ── Form submission ───────────────────────────────────────────────────────
@@ -443,25 +456,27 @@
     e.preventDefault();
     hideError();
 
-    const title = titleInput.value.trim().slice(0, 200);
-    const body  = bodyInput.value.trim().slice(0, 5000);
-    const type  = typeInput.value;
+    const message = msgInput.value.trim().slice(0, 5000);
+    const name    = document.getElementById('contactName').value.trim().slice(0, 100);
+    const email   = document.getElementById('contactEmail').value.trim().slice(0, 254);
+    const type    = typeInput.value;
 
-    if (!title) return;
+    if (!message) return;
 
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}?code=${encodeURIComponent(API_KEY)}`, {
+      const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, body, type }),
+        body: JSON.stringify({ name, email, message, type }),
       });
 
-      if (res.status === 201) {
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
         showSuccess();
       } else {
-        const data = await res.json().catch(() => ({}));
         showError(data.error || 'Submission failed. Please try again.');
       }
     } catch {
@@ -478,26 +493,26 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span class="spinner"></span> Sending…';
     } else {
-      submitBtn.disabled = titleInput.value.trim().length === 0;
-      submitBtn.innerHTML = 'Send feedback →';
+      submitBtn.disabled = msgInput.value.trim().length === 0;
+      submitBtn.innerHTML = 'Send message →';
     }
   }
 
   function showSuccess() {
     form.style.display = 'none';
+    document.getElementById('contactDivider').style.display = 'none';
     successState.classList.add('visible');
-    document.querySelector('.contact-divider').style.display = 'none';
   }
 
   function resetForm() {
     form.reset();
     typeInput.value = 'bug';
     document.querySelectorAll('.type-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
-    updateTitleCount();
-    updateBodyCount();
+    msgInput.placeholder = 'What\'s happening? What did you expect? Any steps to reproduce?';
+    updateMsgCount();
     form.style.display = '';
+    document.getElementById('contactDivider').style.display = '';
     successState.classList.remove('visible');
-    document.querySelector('.contact-divider').style.display = '';
     hideError();
   }
 
