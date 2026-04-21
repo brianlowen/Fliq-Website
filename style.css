@@ -197,7 +197,7 @@ section:nth-child(even) { background: var(--surface-2); }
 }
 
 .phone-frame {
-  width: 260px; height: 520px;
+  width: 260px; height: 558px;
   background: #1a1a2e;
   border-radius: 44px;
   border: 2px solid rgba(255,255,255,.15);
