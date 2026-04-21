@@ -508,9 +508,11 @@ footer {
 
 .how-it-works-screens {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 14px;
+  gap: 32px;
+  padding: 40px 20px;
 }
 
 .phone-tilt-left {
